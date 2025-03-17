@@ -1,3 +1,4 @@
+
 # Better to just add the pin binary to your $PATH
 #PIN_ROOT=~/projects/pin/
 
@@ -13,14 +14,20 @@ SRC=$(wildcard *.c)
 OBJ=$(patsubst %.c,%.o,$(SRC))
 ANNOT_LIB=../lib/libannotation.a
 
-CC=gcc
-INCLUDES=-I../include
+# Use Homebrew's LLVM Clang instead of system Clang
+CC=$(shell brew --prefix llvm)/bin/clang
+
+# Get OpenMP paths from Homebrew
+LIBOMP_PATH=$(shell brew --prefix libomp)
+LLVM_PATH=$(shell brew --prefix llvm)
+
+INCLUDES=-I../include -I$(LIBOMP_PATH)/include
 ifndef DEBUG
-CFLAGS=-O2 -std=gnu99 -lm -fopenmp
-LDFLAGS=-L../lib -lannotation -lm -fopenmp
+CFLAGS=-O2 -std=gnu99 -Xpreprocessor -fopenmp -I$(LIBOMP_PATH)/include
+LDFLAGS=-L../lib -lannotation -L$(LIBOMP_PATH)/lib -lomp -lm
 else
-CFLAGS=-O0 -g3 -std=gnu99 -fsanitize=address -fopenmp
-LDFLAGS=-L../lib -lm -fsanitize=address -fopenmp
+CFLAGS=-O0 -g3 -std=gnu99 -fsanitize=address -Xpreprocessor -fopenmp -I$(LIBOMP_PATH)/include
+LDFLAGS=-L../lib -lm -fsanitize=address -L$(LIBOMP_PATH)/lib -lomp
 endif
 
 all: $(PRJ)
