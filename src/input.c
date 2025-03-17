@@ -82,19 +82,17 @@ void read_parameters(struct parameters* p, int argc, char **argv)
     p->N = 150;
     p->M = 100;
     p->maxiter = 42;
-    p->period = 10;
-    p->threshold = 1.000000e-04;
-    p->io_tmin = 0.000000e+00;
-    p->io_tmax = 1.000000e+02;
+    p->period = 1000;
+    p->threshold = 0.1;
+    p->io_tmin = -100.0;
+    p->io_tmax = 100.0;
     p->nthreads = 1;
-    p->printreports = 1;
+    p->printreports = 0;
     conductivity_fname = "../images/pat1_100x150.pgm";
     tinit_fname = "../images/pat1_100x150.pgm";
 
     while ((ch = getopt(argc, argv, "c:e:hH:i:k:L:m:M:n:N:p:t:r")) != -1)
-    {   
-        printf("char %c\n", ch);
-
+    {
         switch(ch) {
         case 'c': conductivity_fname = optarg; break;
         case 't': tinit_fname = optarg; break;
@@ -110,7 +108,6 @@ void read_parameters(struct parameters* p, int argc, char **argv)
         case 'h': default: usage(argv[0]);
         }
     }
-
 
     printf("Parameters:\n"
            "  -n %zu # number of rows\n"
